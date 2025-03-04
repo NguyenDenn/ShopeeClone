@@ -1,36 +1,22 @@
-import { FloatingPortal, arrow, useFloating, shift, offset } from '@floating-ui/react'
-import { AnimatePresence, motion } from 'framer-motion'
-import { useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
+import Popover from '../Popover'
 
 export default function Header() {
-  const [isOpen, setIsOpen] = useState(false)
-  const arrowRef = useRef<HTMLElement>(null)
-  const { refs, floatingStyles, middlewareData } = useFloating({
-    transform: false,
-    middleware: [
-      offset(6),
-      shift(),
-      arrow({
-        element: arrowRef
-      })
-    ]
-  })
-  const showPopover = () => {
-    setIsOpen(true)
-  }
-  const hidePopover = () => {
-    setIsOpen(false)
-  }
   return (
     <div className='pb-5 pt-2 bg-gradient-to-b from-[#f53d2d] to-[#f63]'>
       <div className='max-w-7xl mx-auto px-4'>
         <div className='flex justify-end'>
-          <div
+          <Popover
+            as='span'
             className='flex items-center py-1 hover:text-gray-300 cursor-pointer'
-            ref={refs.setReference}
-            onMouseEnter={showPopover}
-            onMouseLeave={hidePopover}
+            renderPopover={
+              <div className='bg-white relative shadow-md rounded-sm  border-gray-200'>
+                <div className='flex flex-col py-2 px-3'>
+                  <button className='py-2 px-3 hover:text-orange'>Vietnamese</button>
+                  <button className='py-2 px-3 hover:text-orange'>English</button>
+                </div>
+              </div>
+            }
           >
             <svg
               xmlns='http://www.w3.org/2000/svg'
@@ -57,49 +43,30 @@ export default function Header() {
             >
               <path strokeLinecap='round' strokeLinejoin='round' d='m19.5 8.25-7.5 7.5-7.5-7.5' />
             </svg>
-            <FloatingPortal>
-              <AnimatePresence>
-                {isOpen && (
-                  <motion.div
-                    ref={refs.setFloating}
-                    style={floatingStyles}
-                    initial={{ opacity: 0, transform: 'scale(0)' }}
-                    animate={{ opacity: 1, transform: 'scale(1)' }}
-                    exit={{ opacity: 0, transform: 'scale(0)' }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <span
-                      ref={arrowRef}
-                      style={{
-                        left: middlewareData.arrow?.x,
-                        top: middlewareData.arrow?.y
-                      }}
-                      className='border-x-transparent border-t-transparent border-b-white border-[11px] absolute translate-y-[-96%] z-10  '
-                    ></span>
-                    <div className='bg-white relative shadow-md rounded-sm  border-gray-200'>
-                      <div className='flex flex-col py-2 px-3'>
-                        <button className='py-2 px-3 hover:text-orange'>Vietnamese</button>
-                        <button className='py-2 px-3 hover:text-orange'>English</button>
-                      </div>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </FloatingPortal>
-          </div>
-
-          <div>
-            <div className='flex items-center py-1 hover:text-gray-300 cursor-pointer'>
-              <div className='w-6 h-6 mr-2 flex-shrink-0'>
-                <img
-                  src='https://down-vn.img.susercontent.com/file/vn-11134226-7qukw-lfy0emfdy73eea_tn'
-                  alt='avt'
-                  className='object-cover rounded-full w-full h-full'
-                />
+          </Popover>
+          <Popover
+            className='flex items-center py-1 hover:text-gray-300 cursor-pointer'
+            renderPopover={
+              <div>
+                <Link to='/' className='hover:text-green-300  block bg-white px-3 text-left py-3'>
+                  Tài khoản của ban
+                </Link>
+                <Link to='/a' className='hover:text-green-300 block bg-white px-3 text-left py-3'>
+                  Đơn mua
+                </Link>
+                <button className='hover:text-green-300 block bg-white px-3 w-full text-left py-3'>Đăng xuất</button>
               </div>
-              <div className='text-white'>Doan Cong Dat</div>
+            }
+          >
+            <div className='w-6 h-6 mr-2 flex-shrink-0'>
+              <img
+                src='https://down-vn.img.susercontent.com/file/vn-11134226-7qukw-lfy0emfdy73eea_tn'
+                alt='avt'
+                className='object-cover rounded-full w-full h-full'
+              />
             </div>
-          </div>
+            <div className='text-white'>Doan Cong Dat</div>
+          </Popover>
         </div>
         <div className='grid grid-cols-12 gap-4 mt-4 items-end'>
           <Link to='/' className='col-span-2'>
