@@ -7,6 +7,7 @@ import { registerAccount } from '~/apis/auth.apis'
 import { omit } from 'lodash'
 import { isAxiosUnprocessableEntityError } from '~/utils/utils'
 import { ResponseApi } from '~/types/utils.type'
+import { Link } from 'react-router-dom'
 export default function Register() {
   const {
     register,
@@ -88,7 +89,10 @@ export default function Register() {
               </div>
               <div className='mt-5 text-center'>
                 <p className='text-gray-300'>
-                  Bạn đã có tài khoản? <span className='text-orange'>Đăng Nhập</span>
+                  Bạn đã có tài khoản?{' '}
+                  <Link className='text-oranges cursor-pointer' to='/login'>
+                    Đăng Nhập
+                  </Link>
                 </p>
               </div>
             </form>
