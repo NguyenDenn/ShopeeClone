@@ -6,8 +6,9 @@ import { useMutation } from '@tanstack/react-query'
 import { registerAccount } from '~/apis/auth.apis'
 import { omit } from 'lodash'
 import { isAxiosUnprocessableEntityError } from '~/utils/utils'
-import { ResponseApi } from '~/types/utils.type'
+import { SuccessResponseApi } from '~/types/utils.type'
 import { Link } from 'react-router-dom'
+import Button from '~/Components/Button'
 export default function Register() {
   const {
     register,
@@ -28,7 +29,7 @@ export default function Register() {
         console.log(data)
       },
       onError: (error) => {
-        if (isAxiosUnprocessableEntityError<ResponseApi<Omit<Schema, 'confirm_password'>>>(error)) {
+        if (isAxiosUnprocessableEntityError<SuccessResponseApi<Omit<Schema, 'confirm_password'>>>(error)) {
           const formError = error.response?.data.data
           // dùng cho trường hợp nhiều trường (> email và password)
           // if (formError) {
@@ -84,9 +85,13 @@ export default function Register() {
                 register={register}
                 errorMessage={errors.confirm_password?.message}
               />
-              <div className='mt-8'>
-                <button className='bg-oranges p-4 w-full text-white hover:bg-red-600 border-none'>Đăng Ký</button>
-              </div>
+              <Button
+                className='bg-oranges  p-4 w-full text-white hover:bg-red-600 border-none flex items-center justify-center'
+                isLoading={registerAccountMutation.isLoading}
+                disabled={registerAccountMutation.isLoading}
+              >
+                Đăng Ký
+              </Button>
               <div className='mt-5 text-center'>
                 <p className='text-gray-300'>
                   Bạn đã có tài khoản?{' '}

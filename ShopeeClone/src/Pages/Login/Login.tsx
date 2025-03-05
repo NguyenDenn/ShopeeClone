@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form'
 import { Link, useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { loginAccount } from '~/apis/auth.apis'
+import Button from '~/Components/Button'
 import Input from '~/Components/Input'
 import { AppContext } from '~/context/app.context'
 import { SuccessResponseApi } from '~/types/utils.type'
@@ -76,9 +77,14 @@ export default function Login() {
                 register={register}
                 errorMessage={errors.password?.message}
               />
-              <div className='mt-8'>
-                <button className='bg-oranges p-4 w-full text-white hover:bg-red-600 border-none'>Đăng Nhập</button>
-              </div>
+
+              <Button
+                className='bg-oranges  p-4 w-full text-white hover:bg-red-600 border-none flex items-center justify-center'
+                isLoading={loginAccountMutation.isLoading}
+                disabled={loginAccountMutation.isLoading}
+              >
+                Đăng Nhập
+              </Button>
               <div className='mt-5 text-center'>
                 <p className='text-gray-300'>
                   Bạn đã có tài khoản?{' '}
