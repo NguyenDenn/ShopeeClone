@@ -1,15 +1,18 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useMutation } from '@tanstack/react-query'
+import { useContext } from 'react'
 import { useForm } from 'react-hook-form'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { loginAccount } from '~/apis/auth.apis'
 import Input from '~/Components/Input'
-import { ResponseApi } from '~/types/utils.type'
+import { AppContext } from '~/context/app.context'
+import { SuccessResponseApi } from '~/types/utils.type'
 import { loginSchema, LoginSchema } from '~/utils/rules'
 import { isAxiosUnprocessableEntityError } from '~/utils/utils'
 
 export default function Login() {
+  const { setIsAuthenticated } = useContext(AppContext)
   const {
     register,
     handleSubmit,
@@ -21,16 +24,19 @@ export default function Login() {
   const loginAccountMutation = useMutation({
     mutationFn: (body: LoginSchema) => loginAccount(body)
   })
+  const navigate = useNavigate()
 
   const onSubmit = handleSubmit((data) => {
     const body = data
     loginAccountMutation.mutate(body, {
       onSuccess: (data) => {
-        console.log(data)
+        setIsAuthenticated(true)
+        navigate('/')
         toast.success('Logined successfully')
+        console.log(data)
       },
       onError: (error) => {
-        if (isAxiosUnprocessableEntityError<ResponseApi<LoginSchema>>(error)) {
+        if (isAxiosUnprocessableEntityError<SuccessResponseApi<LoginSchema>>(error)) {
           const formError = error.response?.data.data
           if (formError?.email) {
             setError('email', {
