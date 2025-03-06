@@ -4,7 +4,7 @@ import { useContext } from 'react'
 import { useForm } from 'react-hook-form'
 import { Link, useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
-import { loginAccount } from '~/apis/auth.apis'
+import authApi from '~/apis/auth.apis'
 import Button from '~/Components/Button'
 import Input from '~/Components/Input'
 import { AppContext } from '~/context/app.context'
@@ -23,7 +23,7 @@ export default function Login() {
     resolver: yupResolver(loginSchema)
   })
   const loginAccountMutation = useMutation({
-    mutationFn: (body: LoginSchema) => loginAccount(body)
+    mutationFn: (body: LoginSchema) => authApi.loginAccount(body)
   })
   const navigate = useNavigate()
 
@@ -69,7 +69,7 @@ export default function Login() {
                 name='email'
                 register={register}
                 errorMessage={errors.email?.message}
-                classname='mt-3'
+                className='mt-3'
               />
               <Input
                 type='password'
