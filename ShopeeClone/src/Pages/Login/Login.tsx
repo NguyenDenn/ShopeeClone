@@ -13,7 +13,7 @@ import { loginSchema, LoginSchema } from '~/utils/rules'
 import { isAxiosUnprocessableEntityError } from '~/utils/utils'
 
 export default function Login() {
-  const { setIsAuthenticated } = useContext(AppContext)
+  const { setIsAuthenticated, setProfile } = useContext(AppContext)
   const {
     register,
     handleSubmit,
@@ -32,6 +32,7 @@ export default function Login() {
     loginAccountMutation.mutate(body, {
       onSuccess: (data) => {
         setIsAuthenticated(true)
+        setProfile(data.data.data.user)
         navigate('/')
         toast.success('Logined successfully')
         console.log(data)

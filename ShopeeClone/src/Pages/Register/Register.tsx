@@ -7,8 +7,11 @@ import { registerAccount } from '~/apis/auth.apis'
 import { omit } from 'lodash'
 import { isAxiosUnprocessableEntityError } from '~/utils/utils'
 import { SuccessResponseApi } from '~/types/utils.type'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import Button from '~/Components/Button'
+import path from '~/constants/path'
+import { useContext } from 'react'
+import { AppContext } from '~/context/app.context'
 export default function Register() {
   const {
     register,
@@ -18,14 +21,19 @@ export default function Register() {
   } = useForm<Schema>({
     resolver: yupResolver(schema)
   })
+  const navigate = useNavigate()
   const registerAccountMutation = useMutation({
     mutationFn: (body: Omit<Schema, 'confirm_password'>) => registerAccount(body)
   })
+  const { setIsAuthenticated, setProfile } = useContext(AppContext)
 
   const onSubmit = handleSubmit((data) => {
     const body = omit(data, ['confirm_password'])
     registerAccountMutation.mutate(body, {
       onSuccess: (data) => {
+        navigate(path.home)
+        setIsAuthenticated(true)
+        setProfile(data.data.data.user)
         console.log(data)
       },
       onError: (error) => {

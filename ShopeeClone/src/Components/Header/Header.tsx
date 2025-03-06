@@ -2,20 +2,23 @@ import { Link } from 'react-router-dom'
 import Popover from '../Popover'
 import { useContext } from 'react'
 import { AppContext } from '~/context/app.context'
+import path from '~/constants/path'
 import { useMutation } from '@tanstack/react-query'
 import { logout } from '~/apis/auth.apis'
 
 export default function Header() {
-  const { isAuthenticated, setIsAuthenticated } = useContext(AppContext)
+  const { isAuthenticated, profile, setProfile, setIsAuthenticated } = useContext(AppContext)
   const logoutMutation = useMutation({
-    mutationFn: () => logout(),
+    mutationFn: logout,
     onSuccess: () => {
+      setProfile(null)
       setIsAuthenticated(false)
     }
   })
   const handleLogout = () => {
     logoutMutation.mutate()
   }
+
   return (
     <div className='pb-5 pt-2 bg-gradient-to-b from-[#f53d2d] to-[#f63]'>
       <div className='max-w-7xl mx-auto px-4'>
@@ -63,7 +66,7 @@ export default function Header() {
               className='flex items-center py-1 hover:text-gray-300 cursor-pointer'
               renderPopover={
                 <div>
-                  <Link to='/profile' className='hover:text-green-300  block bg-white px-3 text-left py-3'>
+                  <Link to={path.profile} className='hover:text-green-300  block bg-white px-3 text-left py-3'>
                     Tài khoản của ban
                   </Link>
                   <Link to='/a' className='hover:text-green-300 block bg-white px-3 text-left py-3'>
@@ -84,17 +87,17 @@ export default function Header() {
                   alt='avt'
                   className='object-cover rounded-full w-full h-full'
                 />
-                <div className='text-white'>Doan Cong Dat</div>
               </div>
+              <div className='text-white'>{profile?.email}</div>
             </Popover>
           )}
           {!isAuthenticated && (
             <div className='flex items-center'>
-              <Link to='/register' className='mx-3 capitalize hover:text-white opacity-70 text-white'>
+              <Link to={path.register} className='mx-3 capitalize hover:text-white opacity-70 text-white'>
                 Đăng Ký
               </Link>
               <div className='border-r-[1px] border-r-white/40 h-4' />
-              <Link to='/login' className='mx-3 capitalize hover:text-white opacity-70 text-white'>
+              <Link to={path.login} className='mx-3 capitalize hover:text-white opacity-70 text-white'>
                 Đăng Nhập
               </Link>
             </div>
@@ -116,7 +119,7 @@ export default function Header() {
                 className='text-black px-3 py-2 flex-grow border-none outline-none bg-transparent'
                 placeholder='Tìm sản phẩm, thương hiệu và tên shop'
               />
-              <button className='rounded-sm py-3 px-6 flex-shrink-0 bg-orange hover:opacity-90 text-white'>
+              <button className='rounded-sm py-3 px-6 flex-shrink-0 bg-oranges hover:opacity-90 text-white'>
                 <svg
                   xmlns='http://www.w3.org/2000/svg'
                   fill='none'
@@ -233,7 +236,7 @@ export default function Header() {
                     </div>
                     <div className='flex mt-6 justify-between items-center'>
                       <div className='capitalize text-xs text-gray-500'>Thêm vào giỏ hàng</div>
-                      <button className='capitalize bg-orange py-2 shadow-sm  text-white hover:bg-opacity-90 px-4 '>
+                      <button className='capitalize bg-oranges py-2 shadow-sm  text-white hover:bg-opacity-90 px-4 '>
                         Xem giỏ hàng
                       </button>
                     </div>
