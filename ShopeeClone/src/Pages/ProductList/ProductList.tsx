@@ -13,7 +13,7 @@ export default function ProductList() {
       return productApi.getProducts(queryParams)
     }
   })
-  console.log(data?.data.data.products)
+  console.log(data)
   return (
     <div className='py-6 bg-gray-200'>
       <div className='max-w-7xl mx-auto px-4'>
@@ -24,11 +24,17 @@ export default function ProductList() {
           <div className='col-span-9'>
             <SortProductList />
             <div className='mt-6 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3'>
-              {Array(30)
+              {/* {Array(30)
                 .fill(0)
                 .map((_, index) => (
                   <div className='col-span-1' key={index}>
                     <Product />
+                  </div>
+                ))} */}
+              {data &&
+                data.data.data.products.map((product) => (
+                  <div className='col-span-1' key={product._id}>
+                    <Product product={product} />
                   </div>
                 ))}
             </div>
