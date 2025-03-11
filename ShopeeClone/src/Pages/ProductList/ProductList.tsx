@@ -18,7 +18,7 @@ export default function ProductList() {
       page: queryParams.page || '1',
       category: queryParams.category,
       exclude: queryParams.exclude,
-      limit: queryParams.limit,
+      limit: queryParams.limit || '30',
       name: queryParams.name,
       order: queryParams.order,
       price_max: queryParams.price_max,
@@ -28,7 +28,7 @@ export default function ProductList() {
     },
     isUndefined
   )
-  console.log(queryConfig)
+  console.log('queryConfig', queryConfig)
   const { data } = useQuery({
     queryKey: ['product', queryParams],
     queryFn: () => {
@@ -47,7 +47,7 @@ export default function ProductList() {
                 <AsideFilter />
               </div>
               <div className='col-span-9'>
-                <SortProductList />
+                <SortProductList queryConfig={queryConfig} pageSize={data.data.data.pagination.page_size} />
                 <div className='mt-6 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3'>
                   {data.data.data.products.map((product) => (
                     <div className='col-span-1' key={product._id}>
