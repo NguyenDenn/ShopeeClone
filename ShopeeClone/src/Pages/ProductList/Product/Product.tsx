@@ -6,6 +6,7 @@ import { formatCurrency, formatNumberToSocialStyle } from '~/utils/utils'
 interface Props {
   product: ProductType
 }
+
 export default function Product({ product }: Props) {
   return (
     <Link to='/'>
