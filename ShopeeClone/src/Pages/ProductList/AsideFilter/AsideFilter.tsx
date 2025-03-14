@@ -1,11 +1,8 @@
 import classNames from 'classnames'
 import { createSearchParams, Link, useNavigate } from 'react-router-dom'
 
-import path from 'src/constants/path'
 import { useForm, Controller } from 'react-hook-form'
-import { Schema, schema } from 'src/utils/rules'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { NoUndefinedField } from 'src/types/utils.type'
 import omit from 'lodash/omit'
 
 import { ObjectSchema } from 'yup'
@@ -13,6 +10,10 @@ import { QueryConfig } from '../ProductList'
 import { Category } from '~/types/categories.type'
 import InputNumber from '~/Components/InputNumber'
 import Button from '~/Components/Button'
+import path from '~/constants/path'
+import { schema, Schema } from '~/utils/rules'
+import { NoUndefinedField } from '~/types/utils.type'
+import RatingStart from '../RatingStart'
 
 interface Props {
   queryConfig: QueryConfig
@@ -68,7 +69,7 @@ export default function AsideFilter({ queryConfig, categories }: Props) {
       <Link
         to={path.home}
         className={classNames('flex items-center font-bold', {
-          'text-orange': !category
+          'text-oranges': !category
         })}
       >
         <svg viewBox='0 0 12 10' className='mr-3 h-4 w-3 fill-current'>
@@ -84,6 +85,7 @@ export default function AsideFilter({ queryConfig, categories }: Props) {
             </g>
           </g>
         </svg>
+        Tất cả danh mục
       </Link>
       <div className='my-4 h-[1px] bg-gray-300' />
       <ul>
@@ -100,11 +102,11 @@ export default function AsideFilter({ queryConfig, categories }: Props) {
                   }).toString()
                 }}
                 className={classNames('relative px-2', {
-                  'font-semibold text-orange': isActive
+                  'font-semibold text-oranges': isActive
                 })}
               >
                 {isActive && (
-                  <svg viewBox='0 0 4 7' className='absolute top-1 left-[-10px] h-2 w-2 fill-orange'>
+                  <svg viewBox='0 0 4 7' className='absolute top-1 left-[-10px] h-2 w-2 fill-oranges'>
                     <polygon points='4 3.5 0 0 0 7' />
                   </svg>
                 )}
@@ -132,6 +134,7 @@ export default function AsideFilter({ queryConfig, categories }: Props) {
             />
           </g>
         </svg>
+        Bộ lọc tìm kiếm
       </Link>
       <div className='my-4 h-[1px] bg-gray-300' />
       <div className='my-5'>
@@ -158,19 +161,6 @@ export default function AsideFilter({ queryConfig, categories }: Props) {
                 )
               }}
             />
-            {/* <InputV2
-              control={control}
-              name='price_min'
-              type='number'
-              className='grow'
-              placeholder='₫ TỪ'
-              classNameInput='p-1 w-full outline-none border border-gray-300 focus:border-gray-500 rounded-sm focus:shadow-sm'
-              classNameError='hidden'
-              onChange={() => {
-                trigger('price_max')
-              }}
-            /> */}
-
             <div className='mx-2 mt-2 shrink-0'>-</div>
             <Controller
               control={control}
@@ -194,17 +184,18 @@ export default function AsideFilter({ queryConfig, categories }: Props) {
             />
           </div>
           <div className='mt-1 min-h-[1.25rem] text-center text-sm text-red-600'>{errors.price_min?.message}</div>
-          <Button className='flex w-full items-center justify-center bg-orange p-2 text-sm uppercase text-white hover:bg-orange/80'>
+          <Button className='flex w-full items-center justify-center bg-oranges p-2 text-sm uppercase text-white hover:bg-oranges/80'>
             Áp dụng
           </Button>
         </form>
       </div>
       <div className='my-4 h-[1px] bg-gray-300' />
       <div className='text-sm'>Đánh giá</div>
+      <RatingStart queryConfig={queryConfig} />
       <div className='my-4 h-[1px] bg-gray-300' />
       <Button
         onClick={handleRemoveAll}
-        className='flex w-full items-center justify-center bg-orange p-2 text-sm uppercase text-white hover:bg-orange/80'
+        className='flex w-full items-center justify-center bg-oranges p-2 text-sm uppercase text-white hover:bg-oranges/80'
       >
         Xóa tất cả
       </Button>
