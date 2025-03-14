@@ -12,14 +12,17 @@ import Button from '~/Components/Button'
 import path from '~/constants/path'
 import { useContext } from 'react'
 import { AppContext } from '~/context/app.context'
+
+type FormData = Pick<Schema, 'email' | 'password' | 'confirm_password'>
+const registerSchema = schema.pick(['email', 'password', 'confirm_password'])
 export default function Register() {
   const {
     register,
     handleSubmit,
     setError,
     formState: { errors }
-  } = useForm<Schema>({
-    resolver: yupResolver(schema)
+  } = useForm<FormData>({
+    resolver: yupResolver(registerSchema)
   })
   const navigate = useNavigate()
   const registerAccountMutation = useMutation({
