@@ -6,7 +6,7 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import omit from 'lodash/omit'
 
 import { ObjectSchema } from 'yup'
-import { QueryConfig } from '../ProductList'
+import { QueryConfig } from '../../ProductList'
 import { Category } from '~/types/categories.type'
 import InputNumber from '~/Components/InputNumber'
 import Button from '~/Components/Button'
