@@ -5,10 +5,11 @@ import productApi from '~/apis/product.apis'
 import InputNumber from '~/Components/InputNumber'
 import ProductRating from '~/Components/ProductRating'
 import { Product } from '~/types/product.type'
-import { formatCurrency, formatNumberToSocialStyle, rateSale } from '~/utils/utils'
+import { formatCurrency, formatNumberToSocialStyle, getIdFromNameId, rateSale } from '~/utils/utils'
 
 export default function ProductDetail() {
-  const { id } = useParams()
+  const { nameId } = useParams()
+  const id = getIdFromNameId(nameId as string)
   const { data: ProductDetailData } = useQuery({
     queryKey: ['product', id],
     queryFn: () => productApi.getProductDetails(id as string)
