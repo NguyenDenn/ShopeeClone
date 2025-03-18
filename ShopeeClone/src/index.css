@@ -1,4 +1,6 @@
 @import 'tailwindcss';
+/* tailwind css v4.x */
+@import 'tailwindcss-animated';
 @theme {
   --color-oranges: #ee4d2d;
 }

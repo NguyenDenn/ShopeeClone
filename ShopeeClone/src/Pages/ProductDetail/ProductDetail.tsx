@@ -1,8 +1,10 @@
 import { useQuery } from '@tanstack/react-query'
+import { useEffect, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import productApi from '~/apis/product.apis'
 import InputNumber from '~/Components/InputNumber'
 import ProductRating from '~/Components/ProductRating'
+import { Product } from '~/types/product.type'
 import { formatCurrency, formatNumberToSocialStyle, rateSale } from '~/utils/utils'
 
 export default function ProductDetail() {
@@ -12,23 +14,54 @@ export default function ProductDetail() {
     queryFn: () => productApi.getProductDetails(id as string)
   })
   const product = ProductDetailData?.data.data
-  console.log('product', product)
+
+  const [currentIndexImages, setCurrentIndexImages] = useState([0, 5])
+  const [activeImage, setActiveImage] = useState('')
+  const currentImages = useMemo(
+    () => (product ? product.images.slice(...currentIndexImages) : []),
+    [product, currentIndexImages]
+  )
+
+  useEffect(() => {
+    if (product && product.images.length > 0) {
+      setActiveImage(product.images[0])
+    }
+  }, [product])
+
+  const chooseActive = (img: string) => {
+    setActiveImage(img)
+  }
+
+  const next = () => {
+    if (currentIndexImages[1] < (product as Product).images.length) {
+      return setCurrentIndexImages((prev) => [prev[0] + 1, prev[1] + 1])
+    }
+  }
+  const prev = () => {
+    if (currentIndexImages[0] > 0) {
+      return setCurrentIndexImages((prev) => [prev[0] - 1, prev[1] - 1])
+    }
+  }
+
   if (!product) return null
   return (
-    <div className='bg-gray-200 py-6'>
-      <div className='bg-white p-4 shadow'>
-        <div className='max-w-7xl mx-auto px-4'>
+    <div className='bg-gray-200 py-6 animate-fade-up'>
+      <div className='max-w-7xl mx-auto px-4'>
+        <div className='bg-white p-4 shadow'>
           <div className='grid grid-cols-12 gap-9'>
             <div className='col-span-5'>
               <div className='relative pt-[100%] shadow'>
                 <img
-                  src={product.image}
+                  src={activeImage}
                   alt={product.name}
                   className='absolute top-0 left-0 h-full w-full bg-white object-cover'
                 />
               </div>
               <div className='relative mt-4 grid grid-cols-5 gap-1'>
-                <button className='absolute left-0 top-1/2 z-10 h-9 w-5 -translate-y-1/2 bg-black/20 text-white'>
+                <button
+                  className='absolute left-0 top-1/2 z-10 h-9 w-5 -translate-y-1/2 bg-black/20 text-white'
+                  onClick={prev}
+                >
                   <svg
                     xmlns='http://www.w3.org/2000/svg'
                     fill='none'
@@ -40,12 +73,12 @@ export default function ProductDetail() {
                     <path strokeLinecap='round' strokeLinejoin='round' d='M15.75 19.5L8.25 12l7.5-7.5' />
                   </svg>
                 </button>
-                {product.images.slice(0, 5).map((img, index) => {
-                  const isActive = index === 0
+                {currentImages.slice(0, 5).map((img) => {
+                  const isActive = img === activeImage
                   return (
-                    <div className='relative w-full  pt-[100%]' key={img}>
+                    <div className='relative w-full  pt-[100%]' key={img} onMouseEnter={() => chooseActive(img)}>
                       <img
-                        src={product.image}
+                        src={img}
                         alt={product.name}
                         className='absolute top-0 left-0 h-full w-full cursor-pointer bg-white object-cover'
                       />
@@ -53,7 +86,10 @@ export default function ProductDetail() {
                     </div>
                   )
                 })}
-                <button className='absolute right-0 top-1/2 z-10 h-9 w-5 -translate-y-1/2 bg-black/20 text-white'>
+                <button
+                  className='absolute right-0 top-1/2 z-10 h-9 w-5 -translate-y-1/2 bg-black/20 text-white'
+                  onClick={next}
+                >
                   <svg
                     xmlns='http://www.w3.org/2000/svg'
                     fill='none'
@@ -154,8 +190,8 @@ export default function ProductDetail() {
           </div>
         </div>
       </div>
-      <div className='mt-8 bg-white py-4 shadow'>
-        <div className='max-w-7xl mx-auto px-4'>
+      <div className='max-w-7xl mx-auto px-4'>
+        <div className='mt-8 bg-white py-4 shadow'>
           <div className='rounded capitalize bg-gray-50 text-lg text-slate-700'>mô tả sản phẩm</div>
           <div className='mt-12 mx-4 mb-4 text-sm leading-loose'>
             <div dangerouslySetInnerHTML={{ __html: product.description }} />
