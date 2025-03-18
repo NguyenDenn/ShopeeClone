@@ -7,6 +7,8 @@ import MainLayout from './Layouts/MainLayout/MainLayout'
 import Profile from './Pages/Profile'
 import { useContext } from 'react'
 import { AppContext } from './context/app.context'
+import ProductDetail from './Pages/ProductDetail'
+import path from './constants/path'
 
 export default function RouteElement() {
   const { isAuthenticated } = useContext(AppContext)
@@ -17,15 +19,6 @@ export default function RouteElement() {
     return !isAuthenticated ? <Outlet /> : <Navigate to='/' />
   }
   const routeElement = useRoutes([
-    {
-      path: '/',
-      index: true,
-      element: (
-        <MainLayout>
-          <ProductList />
-        </MainLayout>
-      )
-    },
     {
       path: '/',
       element: <ProtectedRoute />,
@@ -62,6 +55,24 @@ export default function RouteElement() {
           )
         }
       ]
+    },
+    {
+      path: path.home,
+      index: true,
+      element: (
+        <MainLayout>
+          <ProductList />
+        </MainLayout>
+      )
+    },
+    {
+      path: path.productDetail,
+      index: true,
+      element: (
+        <MainLayout>
+          <ProductDetail />
+        </MainLayout>
+      )
     }
   ])
   return routeElement
