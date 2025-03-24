@@ -15,6 +15,7 @@ import { isAxiosUnprocessableEntityError } from '~/utils/utils'
 type FormData = Pick<LoginSchema, 'email' | 'password'>
 const loginSchema = schema.pick(['email', 'password'])
 export default function Login() {
+  const navigate = useNavigate()
   const { setIsAuthenticated, setProfile } = useContext(AppContext)
   const {
     register,
@@ -25,9 +26,8 @@ export default function Login() {
     resolver: yupResolver(loginSchema)
   })
   const loginAccountMutation = useMutation({
-    mutationFn: (body: LoginSchema) => authApi.loginAccount(body)
+    mutationFn: (body: Pick<LoginSchema, 'email' | 'password'>) => authApi.loginAccount(body)
   })
-  const navigate = useNavigate()
 
   const onSubmit = handleSubmit((data) => {
     const body = data
@@ -64,7 +64,7 @@ export default function Login() {
         <div className='grid grid-cols-1 lg:grid-cols-5 py-12 lg:py-32 lg:pr-10'>
           <div className='lg:col-span-2 lg:col-start-4'>
             <form className='bg-white rounded p-10' noValidate onSubmit={onSubmit}>
-              <div className='text-2xl'>Đăng Ký</div>
+              <div className='text-2xl'>Đăng Nhập</div>
               <Input
                 type='email'
                 placeholder='Nhap Email'

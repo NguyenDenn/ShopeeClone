@@ -1,12 +1,29 @@
-import { Link } from 'react-router-dom'
+import { createSearchParams, Link, useNavigate } from 'react-router-dom'
 import Popover from '../Popover'
 import { useContext } from 'react'
 import { AppContext } from '~/context/app.context'
 import path from '~/constants/path'
 import { useMutation } from '@tanstack/react-query'
 import authApi from '~/apis/auth.apis'
+import { useForm } from 'react-hook-form'
+import { schema, Schema } from '~/utils/rules'
+import { yupResolver } from '@hookform/resolvers/yup'
+import useQueryConfig from '~/hooks/useQueryConfig'
+import { omit } from 'lodash'
 
+type FormData = Pick<Schema, 'name'>
+const nameSchema = schema.pick(['name'])
 export default function Header() {
+  const navigate = useNavigate()
+  // Form
+  const { register, handleSubmit } = useForm<FormData>({
+    defaultValues: {
+      name: ''
+    },
+    resolver: yupResolver(nameSchema)
+  })
+
+  // useContext
   const { isAuthenticated, profile, setProfile, setIsAuthenticated } = useContext(AppContext)
   const logoutMutation = useMutation({
     mutationFn: authApi.logout,
@@ -15,9 +32,34 @@ export default function Header() {
       setIsAuthenticated(false)
     }
   })
+  // logout
   const handleLogout = () => {
     logoutMutation.mutate()
   }
+  // submit
+  const queryConfig = useQueryConfig()
+  const onSubmitSearch = handleSubmit((data) => {
+    const query = queryConfig.order
+      ? omit(
+          {
+            ...queryConfig,
+            name: data.name
+          },
+          ['order', 'sort_by']
+        )
+      : omit(
+          {
+            ...queryConfig,
+            name: data.name
+          },
+          []
+        )
+
+    navigate({
+      pathname: path.home,
+      search: createSearchParams(query).toString()
+    })
+  })
 
   return (
     <div className='pb-5 pt-2 bg-gradient-to-b from-[#f53d2d] to-[#f63]'>
@@ -111,13 +153,13 @@ export default function Header() {
               </g>
             </svg>
           </Link>
-          <form className='col-span-9'>
+          <form className='col-span-9' onSubmit={onSubmitSearch}>
             <div className='bg-white rounded-sm p-1 flex'>
               <input
                 type='text'
-                name='search'
                 className='text-black px-3 py-2 flex-grow border-none outline-none bg-transparent'
                 placeholder='Tìm sản phẩm, thương hiệu và tên shop'
+                {...register('name')}
               />
               <button className='rounded-sm py-3 px-6 flex-shrink-0 bg-oranges hover:opacity-90 text-white'>
                 <svg

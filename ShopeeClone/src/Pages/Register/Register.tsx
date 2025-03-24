@@ -26,7 +26,7 @@ export default function Register() {
   })
   const navigate = useNavigate()
   const registerAccountMutation = useMutation({
-    mutationFn: (body: Omit<Schema, 'confirm_password'>) => authApi.registerAccount(body)
+    mutationFn: (body: Pick<FormData, 'email' | 'password'>) => authApi.registerAccount(body)
   })
   const { setIsAuthenticated, setProfile } = useContext(AppContext)
 
