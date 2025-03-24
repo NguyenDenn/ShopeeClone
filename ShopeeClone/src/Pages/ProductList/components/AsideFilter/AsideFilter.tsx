@@ -6,7 +6,6 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import omit from 'lodash/omit'
 
 import { ObjectSchema } from 'yup'
-import { QueryConfig } from '../../ProductList'
 import { Category } from '~/types/categories.type'
 import InputNumber from '~/Components/InputNumber'
 import Button from '~/Components/Button'
@@ -14,6 +13,7 @@ import path from '~/constants/path'
 import { schema, Schema } from '~/utils/rules'
 import { NoUndefinedField } from '~/types/utils.type'
 import RatingStart from '../RatingStart'
+import { QueryConfig } from '~/hooks/useQueryConfig'
 
 interface Props {
   queryConfig: QueryConfig

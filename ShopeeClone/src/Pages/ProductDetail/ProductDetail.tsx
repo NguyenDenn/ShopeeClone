@@ -4,8 +4,9 @@ import { useParams } from 'react-router-dom'
 import productApi from '~/apis/product.apis'
 import InputNumber from '~/Components/InputNumber'
 import ProductRating from '~/Components/ProductRating'
-import { Product } from '~/types/product.type'
+import { Product as ProductType, ProductListConfig } from '~/types/product.type'
 import { formatCurrency, formatNumberToSocialStyle, getIdFromNameId, rateSale } from '~/utils/utils'
+import Product from '../ProductList/components/Product'
 
 export default function ProductDetail() {
   const { nameId } = useParams()
@@ -23,6 +24,18 @@ export default function ProductDetail() {
     [product, currentIndexImages]
   )
 
+  // san pham tuong tu
+  const queryConfig: ProductListConfig = { limit: '20', page: '1', category: product?.category._id }
+  const { data: ProductData } = useQuery({
+    queryKey: ['product', queryConfig],
+    queryFn: () => {
+      return productApi.getProducts(queryConfig)
+    },
+    staleTime: 3 * 60 * 1000,
+    enabled: Boolean(product)
+  })
+  console.log('product', product)
+  console.log('ProductData', ProductData)
   useEffect(() => {
     if (product && product.images.length > 0) {
       setActiveImage(product.images[0])
@@ -34,7 +47,7 @@ export default function ProductDetail() {
   }
 
   const next = () => {
-    if (currentIndexImages[1] < (product as Product).images.length) {
+    if (currentIndexImages[1] < (product as ProductType).images.length) {
       return setCurrentIndexImages((prev) => [prev[0] + 1, prev[1] + 1])
     }
   }
@@ -230,6 +243,20 @@ export default function ProductDetail() {
           <div className='mt-12 mx-4 mb-4 text-sm leading-loose'>
             <div dangerouslySetInnerHTML={{ __html: product.description }} />
           </div>
+        </div>
+      </div>
+      <div className='mt-8 '>
+        <div className='max-w-7xl mx-auto px-4'>
+          <div className='uppercase text-gray-400 '>Có thể bạn cũng thích</div>
+          {ProductData && (
+            <div className='mt-6 grid grid-cols-2 gap-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 '>
+              {ProductData.data.data.products.map((product) => (
+                <div className='col-span-1' key={product._id}>
+                  <Product product={product} />
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>
