@@ -108,6 +108,7 @@ export default function ProductDetail() {
         buy_count: buyCount,
         product_id: product?._id as string
       },
+
       {
         onSuccess: (data) => {
           toast.success(data.data.message, { autoClose: 1000 })
