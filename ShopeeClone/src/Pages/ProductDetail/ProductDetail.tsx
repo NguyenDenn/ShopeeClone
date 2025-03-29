@@ -1,5 +1,5 @@
-import { useQuery } from '@tanstack/react-query'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import productApi from '~/apis/product.apis'
 import ProductRating from '~/Components/ProductRating'
@@ -7,8 +7,13 @@ import { Product as ProductType, ProductListConfig } from '~/types/product.type'
 import { formatCurrency, formatNumberToSocialStyle, getIdFromNameId, rateSale } from '~/utils/utils'
 import Product from '../ProductList/components/Product'
 import QuantityController from '~/Components/QuantityController'
+import purchaseApi from './../../apis/purchase'
+import { AppContext } from '~/context/app.context'
+import { toast } from 'react-toastify'
+import { purchaseStatus } from '~/constants/purchase'
 
 export default function ProductDetail() {
+  const { isAuthenticated } = useContext(AppContext)
   const [buyCount, setBuyCount] = useState(0)
   const { nameId } = useParams()
   const id = getIdFromNameId(nameId as string)
@@ -89,6 +94,28 @@ export default function ProductDetail() {
     setBuyCount(value)
   }
 
+  const addToCartMutation = useMutation(purchaseApi.addToCart)
+  // const addToCartMutation = useMutation({
+  //   mutationFn: (body: { buy_count: number; product_id: string }) => purchaseApi.addToCart(body)
+  // })
+  const queryClient = useQueryClient()
+  const addToCart = () => {
+    if (!isAuthenticated) {
+      toast.error('Vui lòng đăng nhập trước khi mua hàng')
+    }
+    addToCartMutation.mutate(
+      {
+        buy_count: buyCount,
+        product_id: product?._id as string
+      },
+      {
+        onSuccess: (data) => {
+          toast.success(data.data.message, { autoClose: 1000 })
+          queryClient.invalidateQueries({ queryKey: ['purchases', { status: purchaseStatus.inCart }] })
+        }
+      }
+    )
+  }
   if (!product) return null
   return (
     <div className='bg-gray-200 py-6 animate-fade-up'>
@@ -191,7 +218,10 @@ export default function ProductDetail() {
               </div>
 
               <div className='mt-8 flex items-center'>
-                <button className='px-4 h-12 flex items-center justify-center border border-oranges text-oranges bg-oranges/10 capitalize shadow-sm hover:bg-oranges/5'>
+                <button
+                  className='px-4 h-12 flex items-center justify-center border border-oranges text-oranges bg-oranges/10 capitalize shadow-sm hover:bg-oranges/5'
+                  onClick={addToCart}
+                >
                   <svg
                     xmlns='http://www.w3.org/2000/svg'
                     fill='none'
