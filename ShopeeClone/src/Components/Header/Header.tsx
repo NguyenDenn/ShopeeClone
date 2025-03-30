@@ -1,6 +1,6 @@
 import { Link, createSearchParams, useNavigate } from 'react-router-dom'
 import Popover from '../Popover'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import authApi from '~/apis/auth.apis'
 import { useContext } from 'react'
 import path from '~/constants/path'
@@ -9,9 +9,9 @@ import { useForm } from 'react-hook-form'
 import { Schema, schema } from '~/utils/rules'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { omit } from 'lodash'
-import purchaseApi from '~/apis/purchase'
-import noProduct from '~/assets/images/noproduct.png'
+import purchaseApi from '~/apis/purchase.api'
 import { formatCurrency } from '~/utils/utils'
+import noProduct from '~/assets/images/noproduct.png'
 import { AppContext } from '~/context/app.context'
 import { purchaseStatus } from '~/constants/purchase'
 type FormData = Pick<Schema, 'name'>
@@ -28,17 +28,24 @@ export default function Header() {
     resolver: yupResolver(nameSchema)
   })
   const { setIsAuthenticated, isAuthenticated, setProfile, profile } = useContext(AppContext)
+  const queryClient = useQueryClient()
   const logoutMutation = useMutation({
     mutationFn: authApi.logout,
     onSuccess: () => {
       setIsAuthenticated(false)
       setProfile(null)
+      queryClient.removeQueries({ queryKey: ['purchases', { status: purchaseStatus.inCart }], exact: true })
     }
   })
 
   const { data: purchasesInCartData } = useQuery({
     queryKey: ['purchases', { status: purchaseStatus.inCart }],
-    queryFn: () => purchaseApi.getPurchase({ status: purchaseStatus.inCart })
+    queryFn: () => purchaseApi.getPurchase({ status: purchaseStatus.inCart }),
+    // enable có tác dụng khi:
+    // thuột tính enable là optional: Khi người dùng authenticated là true => Ng dùng đã đăng nhập => sẽ cho phép gọi api => lấy dữ liệu mua hàng
+    // người dùng authenticated là false => ng dùng chưa đăng nhập => không cho phép gọi api => khong lấy dữ liệu mua hàng
+    // //
+    enabled: isAuthenticated
   })
 
   const MAX_PURCHASES = 5
@@ -194,10 +201,11 @@ export default function Header() {
               renderPopover={
                 <div className='bg-white relative shadow-md rounded-sm  border-gray-200 max-w-[400px] text-sm'>
                   <div className='p-4'>
-                    {purchasesInCart ? (
+                    {/* check xem có data từ purchaseInCart và có bất kì phẩn tử nào hay không */}
+                    {purchasesInCart && purchasesInCart.length > 0 ? (
                       <div className='p-2'>
-                        <div className='text-gray-300 capitalize'>Sản phẩm mới thêm</div>
                         <div className='mt-5'>
+                          <div className='text-gray-300 capitalize'>Sản phẩm mới thêm</div>
                           {purchasesInCart.slice(0, MAX_PURCHASES).map((purchases) => (
                             <div className='mt-2 py-2 px-2 flex hover:bg-gray-200' key={purchases._id}>
                               <div className='flex-shrink-0'>
@@ -215,7 +223,7 @@ export default function Header() {
                         </div>
                       </div>
                     ) : (
-                      <div className='flex items-center justify-center w-[300px] h-[300px] p-2 ml-7'>
+                      <div className='flex flex-col items-center justify-center w-[300px] h-[300px] p-2 ml-7 '>
                         <img src={noProduct} alt='no product' className='w-20 h-20' />
                         <div className='capitalize mt-3'>Chưa có sản phẩm</div>
                       </div>
@@ -225,9 +233,12 @@ export default function Header() {
                         {purchasesInCart.length > MAX_PURCHASES ? purchasesInCart.length - MAX_PURCHASES : ''} Thêm hàng
                         vào giỏ
                       </div>
-                      <button className='capitalize bg-oranges py-2 shadow-sm  text-white hover:bg-opacity-90 px-4 '>
+                      <Link
+                        to={path.cart}
+                        className='capitalize bg-oranges py-2 shadow-sm  text-white hover:bg-opacity-90 px-4 '
+                      >
                         Xem giỏ hàng
-                      </button>
+                      </Link>
                     </div>
                   </div>
                 </div>
@@ -248,9 +259,11 @@ export default function Header() {
                     d='M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z'
                   />
                 </svg>
-                <span className='absolute px-[9px] py-[1px] top-[-5px] left-[20px] rounded-full bg-white text-oranges'>
-                  {purchasesInCart.length}
-                </span>
+                {purchasesInCart && (
+                  <span className='absolute px-[9px] py-[1px] top-[-5px] left-[20px] rounded-full bg-white text-oranges'>
+                    {purchasesInCart.length}
+                  </span>
+                )}
               </Link>
             </Popover>
           </div>
